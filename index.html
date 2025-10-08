@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>King!</title>
+    <title>King! - Asynchronous Letter Slide</title>
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <style>
         /* --- CSS STYLES --- */
 
         :root {
-            /* Define the two animated colors */
             --color-start: #FF00FF; /* Vibrant Magenta */
             --color-end: #00FF90;   /* Bright Yellow-Green (Cyan-Green) */
-            
-            /* Dark, almost black background */
             --background-dark: #0A0A0A;
-            /* Subtle white glow for high-tech feel */
-            --glow-color: rgba(255, 255, 255, 0.6); 
+            --slide-duration: 1.5s; /* Base duration for the slide animation */
         }
 
         body, html {
@@ -28,7 +24,6 @@
             letter-spacing: 5px; 
         }
         
-        /* The robust container that handles layout and prevents clipping */
         #viewport-wrapper {
             width: 100%;
             height: 100%;
@@ -38,29 +33,55 @@
             overflow: hidden; 
         }
 
-        /* The container for the word "King!" */
+        /* Container for the whole word, now set to flex to align letters */
         #word-container {
-            font-size: 16vw; /* Highly visible size */
+            font-size: 16vw; 
             line-height: 1;
             cursor: pointer; 
-            
-            /* Initial color and animation setup */
-            color: var(--color-start);
-            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--glow-color);
+            display: flex; /* Makes the spans line up horizontally */
+        }
+        
+        /* Each letter is now a span and gets the individual animation */
+        #word-container span {
+            display: inline-block; /* Essential for transform/animation to work */
+            opacity: 0; /* Starts hidden */
 
-            /* Animation */
-            animation: 
-                colorShift 3s infinite alternate, /* NEW: Color animation */
-                pulseGlow 2s infinite alternate, 
-                slideIn 1.5s cubic-bezier(0.17, 0.84, 0.43, 1) 1 forwards;
+            /* Shared Continuous Animations */
+            animation-name: colorShift, pulseGlow, letterSlideIn;
+            animation-duration: 3s, 2s, var(--slide-duration);
+            animation-iteration-count: infinite, infinite, 1;
+            animation-direction: alternate, alternate, normal;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
             
-            opacity: 0; 
-            transform: translateX(-100vw); 
+            /* Initial appearance for continuous animations */
+            color: var(--color-start);
+            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
         }
         
         /* ------------------------------------------------------------------ */
-        /* NEW KEYFRAMES: Smoothly transitions the text color and its shadow */
+        /* KEYFRAMES */
         /* ------------------------------------------------------------------ */
+
+        /* Individual Letter Slide-In Animation */
+        @keyframes letterSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(100px) scale(0.9); /* Starts below */
+                filter: blur(5px);
+            }
+            70% {
+                opacity: 1;
+                transform: translateY(-5px) scale(1.02); /* Overshoot up */
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1); /* Settles */
+            }
+        }
+
+        /* Color Shift Animation (same as before) */
         @keyframes colorShift {
             0% {
                 color: var(--color-start);
@@ -72,40 +93,22 @@
             }
         }
 
-
-        /* Keyframes for a constant, breathing glow effect (subtle) */
+        /* Pulse Glow Animation (subtle opacity change) */
         @keyframes pulseGlow {
             0% { opacity: 1; }
             100% { opacity: 0.95; }
-        }
-
-        /* Keyframes for the dramatic entrance: slides in and snaps to center */
-        @keyframes slideIn {
-            0% {
-                opacity: 0;
-                transform: translateX(-100vw) scale(0.9);
-                filter: blur(10px);
-            }
-            80% {
-                opacity: 1;
-                transform: translateX(5vw) scale(1.02); /* Overshoot for the snap effect */
-                filter: blur(0);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
         }
 
         /* Styles for the click pulse effect */
         .pulse {
             animation: pulseEffect 0.5s ease-out;
         }
+        /* NOTE: The click pulse will affect the whole word due to JS targeting the container */
         @keyframes pulseEffect {
             0% { transform: scale(1); }
             50% { 
-                transform: scale(1.03); /* Subtle pulse */
-                color: white; /* Flashes white momentarily */
+                transform: scale(1.03); 
+                color: white; 
             }
             100% { transform: scale(1); }
         }
@@ -115,22 +118,39 @@
 
     <div id="viewport-wrapper">
         <div id="word-container">
-            King!
-        </div>
+            </div>
     </div>
 
     <script>
-        /* --- JAVASCRIPT FOR CLICK INTERACTIVITY --- */
+        /* --- JAVASCRIPT: Restructures HTML and Applies Asynchronous Delays --- */
 
-        const word = document.getElementById('word-container');
+        const targetWord = "King!";
+        const container = document.getElementById('word-container');
+        const slideDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slide-duration')); // 1.5s
         
-        // Add a reactive 'pulse' on click/touch
-        word.addEventListener('click', () => {
-            // Remove and re-add the class to trigger the animation every time
-            word.classList.remove('pulse'); 
-            void word.offsetWidth; // Trigger reflow to restart the animation
-            word.classList.add('pulse'); 
+        // 1. Restructure the HTML: Break the word into letter spans
+        let htmlContent = '';
+        targetWord.split('').forEach((char, index) => {
+            // Apply a unique animation delay to each letter
+            const delay = index * 0.15; // 0.15 seconds delay between each letter
+            
+            // Note: Use a space for the space character if needed, or wrap the exclamation mark
+            htmlContent += `<span style="animation-delay: ${delay}s, ${delay}s, ${delay}s;">${char}</span>`;
         });
+        container.innerHTML = htmlContent;
+
+        
+        // 2. Add click interaction listener to the whole container
+        container.addEventListener('click', () => {
+            // Since the pulse effect is simple, we apply it to the whole container
+            container.classList.remove('pulse'); 
+            void container.offsetWidth; // Trigger reflow to restart the animation
+            container.classList.add('pulse'); 
+        });
+
+        // Optional: Ensure the slide-in completes before applying pulse/color effects
+        // We ensure all three animations (colorShift, pulseGlow, letterSlideIn) 
+        // start at the same delay time for each letter.
     </script>
 
 </body>
