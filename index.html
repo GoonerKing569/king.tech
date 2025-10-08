@@ -54,33 +54,40 @@
         
         /* Each letter is a span and gets its own async animation */
         #text-link span {
-    display: inline-block;
-    opacity: 0; 
-    
-    /* --- TRUE RGB RAINBOW SETUP (FIXED) --- */
-    /* Set the background image (the rainbow) */
-    background-image: var(--rainbow-gradient);
-    background-size: var(--rainbow-gradient-size) 100%; 
-    
-    /* Crucial: Clip the background to the text and make the text transparent */
-    -webkit-background-clip: text; /* Safari/Chrome */
-    background-clip: text; /* Standard */
-    
-    /* CRITICAL FIX: Ensures the fill is transparent in all browsers */
-    -webkit-text-fill-color: transparent; /* Safari/Chrome */
-    text-fill-color: transparent; /* Standard (Though less supported) */
+            display: inline-block;
+            opacity: 0; 
+            
+            /* --- TRUE RGB RAINBOW SETUP (DEFINITIVE FIX) --- */
+            
+            /* 1. Set the background image */
+            background-image: var(--rainbow-gradient);
+            background-size: var(--rainbow-gradient-size) 100%; 
 
-    /* Stacking Animations: Pulse, Slide-In */
-    animation-name: pulseGlow, letterSlideIn;
-    animation-duration: var(--pulse-cycle-speed), var(--slide-duration);
-    animation-iteration-count: infinite, 1;
-    animation-direction: alternate, normal;
-    animation-fill-mode: forwards;
-    animation-timing-function: ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
-    
-    /* Initial glow (white shadow is used since the text color is transparent) */
-    text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
-}
+            /* 2. CRUCIAL: Clip the background to the text shape */
+            -webkit-background-clip: text; /* Safari/Chrome */
+            background-clip: text; /* Standard */
+            
+            /* 3. CRUCIAL: Make the text transparent */
+            -webkit-text-fill-color: transparent; /* Safari/Chrome */
+            text-fill-color: transparent; 
+
+            /* 4. Ensure no solid color is inherited */
+            color: rgba(0, 0, 0, 0); 
+
+            /* 5. Rendering Hint: Forces the engine to process the gradient */
+            filter: brightness(1.2); 
+            
+            /* Stacking Animations: Pulse, Slide-In */
+            animation-name: pulseGlow, letterSlideIn;
+            animation-duration: var(--pulse-cycle-speed), var(--slide-duration);
+            animation-iteration-count: infinite, 1;
+            animation-direction: alternate, normal;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+            
+            /* Initial glow (white shadow is used since the text color is transparent) */
+            text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
+        }
         
         /* ------------------------------------------------------------------ */
         /* KEYFRAMES */
@@ -109,8 +116,6 @@
             0% { opacity: 1; }
             100% { opacity: 0.95; }
         }
-        
-        /* Click Pulse Effect (Removed as the body is now a link) */
     </style>
 </head>
 <body>
@@ -141,7 +146,6 @@
         let letterIndex = 0;
 
         phrase.split('').forEach((char, index) => {
-            // Asynchronous delay for ALL effects (0.05s for quick sequence)
             const delay = index * 0.05; 
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
