@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The World Is Yours...</title>
+    <title>Typing Animation</title> 
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS STYLES --- */
+        /* --- CSS STYLES (Unchanged) --- */
 
         :root {
             --color-start: #FF00FF; 
@@ -90,6 +90,9 @@
         // 🎯 GET PHRASE FROM THE HTML ATTRIBUTE 🎯
         const phrase = container.getAttribute('data-phrase'); 
         const ellipsis = ["", ".", "..", "..."];
+        
+        // 🎯 Set the initial page title to the full phrase 🎯
+        document.title = phrase; 
         
         let phraseIndex = 0;
         let charIndex = 0;
