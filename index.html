@@ -11,8 +11,8 @@
         :root {
             /* Animation Speeds */
             --slide-duration: 0.5s; 
-            --color-cycle-speed: 5s; /* SLOWER: Use a longer cycle time for a smooth, full rainbow */
-            --pulse-cycle-speed: 2s; 
+            --color-cycle-speed: 3.5s; /* SLOWER: Use a longer cycle time for a smooth, full rainbow */
+            --pulse-cycle-speed: 1.75s; 
             /* Theme */
             --background-dark: #0A0A0A;
             /* NEW: Define a base rainbow gradient for the text */
@@ -38,15 +38,29 @@
         }
 
         /* The Link container, styled to not look like a link */
-        #text-link {
-            text-decoration: none; 
-            color: inherit; 
-            font-size: 8vmin; 
-            line-height: 1;
-            cursor: pointer;
-            display: flex;
-            height: fit-content; 
-        }
+/* Each letter is a span and gets its own async animation */
+#text-link span {
+    display: inline-block;
+    opacity: 0; 
+    
+    /* --- TEXT RAINBOW SETUP (KEY CHANGES HERE) --- */
+    color: transparent; 
+    /* 🎯 ADD THIS LINE FOR CHROME/SAFARI COMPATIBILITY 🎯 */
+    -webkit-text-fill-color: transparent;
+    
+    background-image: var(--rainbow-gradient);
+    background-size: 400% 100%; 
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    /* ----------------------------------------------- */
+
+    /* Stacking Animations: Color, Pulse, Slide-In */
+    animation-name: backgroundCycle, pulseGlow, letterSlideIn; 
+    /* ... rest of animation properties ... */
+    
+    /* Initial state (Glow) */
+    text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
+}
         
         /* Each letter is a span and gets its own async animation */
         #text-link span {
@@ -112,7 +126,7 @@
 
     <div id="viewport-wrapper">
         <a id="text-link" 
-           href="YOUR_DISCORD_SERVER_INVITE_LINK_HERE" 
+           href="https://discord.gg/9VzZ5bbPkW" 
            target="_blank" 
            data-phrase="The World Is Yours">
             </a>
