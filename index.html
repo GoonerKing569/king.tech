@@ -10,14 +10,13 @@
 
         :root {
             /* Animation Speeds */
-            --slide-duration: 0.5s; /* Fast slide-in duration */
-            --color-cycle-speed: 0.8s; /* Speed of the continuous color shift */
-            --pulse-cycle-speed: 1.35s; /* Speed of the continuous glow pulse */
-            /* Color Definition */
-            --color-start: #FF00FF; 
-            --color-end: #00FF90;   
+            --slide-duration: 0.5s; 
+            --color-cycle-speed: 5s; /* SLOWER: Use a longer cycle time for a smooth, full rainbow */
+            --pulse-cycle-speed: 2s; 
             /* Theme */
             --background-dark: #0A0A0A;
+            /* NEW: Define a base rainbow gradient for the text */
+            --rainbow-gradient: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
         }
 
         body, html {
@@ -42,7 +41,6 @@
         #text-link {
             text-decoration: none; 
             color: inherit; 
-
             font-size: 8vmin; 
             line-height: 1;
             cursor: pointer;
@@ -50,29 +48,42 @@
             height: fit-content; 
         }
         
-        /* 🎯 ALL ANIMATIONS ARE ON THE SPAN AGAIN FOR ASYNC EFFECT 🎯 */
+        /* Each letter is a span and gets its own async animation */
         #text-link span {
             display: inline-block;
             opacity: 0; 
             
+            /* --- TEXT RAINBOW SETUP (KEY CHANGES HERE) --- */
+            color: transparent; /* Makes the original text color invisible */
+            background-image: var(--rainbow-gradient);
+            background-size: 400% 100%; /* Makes the gradient wide so it can cycle smoothly */
+            -webkit-background-clip: text; /* Clips the gradient to the text shape */
+            background-clip: text; /* Standard version */
+            /* ----------------------------------------------- */
+
             /* Stacking Animations: Color, Pulse, Slide-In */
-            animation-name: colorShift, pulseGlow, letterSlideIn;
+            animation-name: backgroundCycle, pulseGlow, letterSlideIn; /* Renamed colorShift to backgroundCycle */
             animation-duration: var(--color-cycle-speed), var(--pulse-cycle-speed), var(--slide-duration);
             animation-iteration-count: infinite, infinite, 1;
-            animation-direction: alternate, alternate, normal;
+            animation-direction: normal, alternate, normal; /* Changed cycle direction to normal for smooth looping */
             animation-fill-mode: forwards;
-            animation-timing-function: ease-in-out, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+            animation-timing-function: linear, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
             
             /* Initial state */
-            color: var(--color-start);
-            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
+            text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
         }
         
         /* ------------------------------------------------------------------ */
-        /* KEYFRAMES (Unchanged) */
+        /* KEYFRAMES */
         /* ------------------------------------------------------------------ */
 
-        /* Individual Letter Slide-In Animation (from below) */
+        /* NEW: Animates the background position to cycle the rainbow */
+        @keyframes backgroundCycle {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* Individual Letter Slide-In Animation (Unchanged) */
         @keyframes letterSlideIn {
             0% {
                 opacity: 0;
@@ -90,19 +101,7 @@
             }
         }
 
-        /* Color Shift Animation */
-        @keyframes colorShift {
-            0% {
-                color: var(--color-start);
-                text-shadow: 0 0 1px var(--color-start), 0 0 15px var(--color-start);
-            }
-            100% {
-                color: var(--color-end);
-                text-shadow: 0 0 1px var(--color-end), 0 0 15px var(--color-end);
-            }
-        }
-
-        /* Pulse Glow Animation */
+        /* Pulse Glow Animation (Unchanged) */
         @keyframes pulseGlow {
             0% { opacity: 1; }
             100% { opacity: 0.95; }
@@ -113,14 +112,14 @@
 
     <div id="viewport-wrapper">
         <a id="text-link" 
-           href="https://discord.gg/9VzZ5bbPkW" 
+           href="YOUR_DISCORD_SERVER_INVITE_LINK_HERE" 
            target="_blank" 
            data-phrase="The World Is Yours">
             </a>
     </div>
 
     <script>
-        /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation --- */
+        /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation (Mostly Unchanged) --- */
 
         const linkElement = document.getElementById('text-link');
         const phrase = linkElement.getAttribute('data-phrase');
@@ -134,8 +133,7 @@
             const delay = index * 0.05; // 0.05s delay for fast async start
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
-            // 🎯 APPLY DELAY TO ALL THREE ANIMATIONS 🎯
-            // This makes the color, pulse, AND slide-in all stagger
+            // Apply delay to all three animations
             htmlContent += `<span style="animation-delay: ${delay}s, ${delay}s, ${delay}s;">${charDisplay}</span>`;
         });
         linkElement.innerHTML = htmlContent;
@@ -147,7 +145,6 @@
             let titleIndex = 0;
             const baseTitle = phrase;
 
-            // 500ms for title animation speed
             setInterval(() => {
                 document.title = baseTitle + titleEllipsis[titleIndex];
                 titleIndex = (titleIndex + 1) % titleEllipsis.length;
