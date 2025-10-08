@@ -17,22 +17,22 @@
             --glow-color: rgba(255, 255, 255, 0.6); 
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden; 
-            background-color: var(--background-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* New Font: Michroma */
-            font-family: 'Michroma', sans-serif; 
-            color: var(--electric-blue);
-            /* A tighter, sharper text shadow */
-            text-shadow: 0 0 1px var(--electric-blue), 0 0 10px var(--glow-color);
-            letter-spacing: 5px; /* Spacing for a more architectural look */
-        }
+body, html {
+    margin: 0;
+    /* ADD A SMALL AMOUNT OF PADDING HERE */
+    padding: 10px; /* This creates a 10px buffer around the edge */
+    
+    height: 100%;
+    overflow: hidden; 
+    background-color: var(--background-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Michroma', sans-serif; 
+    color: var(--electric-blue);
+    text-shadow: 0 0 1px var(--electric-blue), 0 0 10px var(--glow-color);
+    letter-spacing: 5px; 
+}
 
         /* The container for the word "King!" */
         #word-container {
