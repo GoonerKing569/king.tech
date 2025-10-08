@@ -11,6 +11,8 @@
         :root {
             /* Animation Speeds */
             --slide-duration: 0.5s; /* Fast slide-in duration */
+            --color-cycle-speed: 0.8s; /* Speed of the continuous color shift */
+            --pulse-cycle-speed: 1.35s; /* Speed of the continuous glow pulse */
             /* Color Definition */
             --color-start: #FF00FF; 
             --color-end: #00FF90;   
@@ -36,50 +38,38 @@
             overflow: hidden; 
         }
 
-        /* NEW: Style the anchor tag to look like the text container */
+        /* The Link container, styled to not look like a link */
         #text-link {
-            /* Removes the blue color and underline standard to links */
             text-decoration: none; 
-            /* Inherits the font and color properties from the spans/container */
             color: inherit; 
 
             font-size: 8vmin; 
             line-height: 1;
             cursor: pointer;
-            display: flex; /* Critical: Keeps the spans in a line */
-
-            /* Apply continuous color and shadow to the link container */
-            color: var(--color-start);
-            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
-            
-            /* Apply continuous animations to the link container itself */
-            animation-name: colorShift, pulseGlow;
-            animation-duration: 0.8s, 1.25s; /* Faster color shift (0.8s) */
-            animation-iteration-count: infinite, infinite;
-            animation-direction: alternate, alternate;
-            animation-fill-mode: forwards;
-            animation-timing-function: ease-in-out, ease-in-out;
-
-            /* This ensures the link is the full area of the text */
+            display: flex;
             height: fit-content; 
         }
         
-        /* Each letter is a span and gets its own async animation */
+        /* 🎯 ALL ANIMATIONS ARE ON THE SPAN AGAIN FOR ASYNC EFFECT 🎯 */
         #text-link span {
             display: inline-block;
             opacity: 0; 
             
-            /* Stacking Animations: Slide-In only (color/pulse moved to #text-link) */
-            animation-name: letterSlideIn;
-            animation-duration: var(--slide-duration);
-            animation-iteration-count: 1;
-            animation-direction: normal;
+            /* Stacking Animations: Color, Pulse, Slide-In */
+            animation-name: colorShift, pulseGlow, letterSlideIn;
+            animation-duration: var(--color-cycle-speed), var(--pulse-cycle-speed), var(--slide-duration);
+            animation-iteration-count: infinite, infinite, 1;
+            animation-direction: alternate, alternate, normal;
             animation-fill-mode: forwards;
-            animation-timing-function: cubic-bezier(0.17, 0.84, 0.43, 1);
+            animation-timing-function: ease-in-out, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+            
+            /* Initial state */
+            color: var(--color-start);
+            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
         }
         
         /* ------------------------------------------------------------------ */
-        /* KEYFRAMES */
+        /* KEYFRAMES (Unchanged) */
         /* ------------------------------------------------------------------ */
 
         /* Individual Letter Slide-In Animation (from below) */
@@ -91,7 +81,7 @@
             }
             70% {
                 opacity: 1;
-                transform: translateY(-5px) scale(1.02);
+                transform: translateY(-5px) scale(1.02); 
                 filter: blur(0);
             }
             100% {
@@ -141,12 +131,12 @@
         // 2. Set up the letter animation delays
         let htmlContent = '';
         phrase.split('').forEach((char, index) => {
-            // Speed settings: 0.05s delay and 0.5s slide duration
-            const delay = index * 0.05; 
+            const delay = index * 0.05; // 0.05s delay for fast async start
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
-            // Apply delay to the single 'letterSlideIn' animation
-            htmlContent += `<span style="animation-delay: ${delay}s;">${charDisplay}</span>`;
+            // 🎯 APPLY DELAY TO ALL THREE ANIMATIONS 🎯
+            // This makes the color, pulse, AND slide-in all stagger
+            htmlContent += `<span style="animation-delay: ${delay}s, ${delay}s, ${delay}s;">${charDisplay}</span>`;
         });
         linkElement.innerHTML = htmlContent;
 
