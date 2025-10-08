@@ -10,10 +10,10 @@
 
         :root {
             /* Animation Speeds */
-            --slide-duration: 0.5s; /* Speed of the initial letter entrance */
+            --slide-duration: 0.5s; /* Fast slide-in duration */
             /* Color Definition */
-            --color-start: #FF00FF; /* Vibrant Magenta */
-            --color-end: #00FF90;   /* Bright Yellow-Green */
+            --color-start: #FF00FF; 
+            --color-end: #00FF90;   
             /* Theme */
             --background-dark: #0A0A0A;
         }
@@ -36,30 +36,46 @@
             overflow: hidden; 
         }
 
-        /* Container for the whole word */
-        #text-container {
-            /* Dynamic Text Scaling based on VMIN (Viewport Minimum) */
+        /* NEW: Style the anchor tag to look like the text container */
+        #text-link {
+            /* Removes the blue color and underline standard to links */
+            text-decoration: none; 
+            /* Inherits the font and color properties from the spans/container */
+            color: inherit; 
+
             font-size: 8vmin; 
             line-height: 1;
             cursor: pointer;
-            display: flex; 
+            display: flex; /* Critical: Keeps the spans in a line */
+
+            /* Apply continuous color and shadow to the link container */
+            color: var(--color-start);
+            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
+            
+            /* Apply continuous animations to the link container itself */
+            animation-name: colorShift, pulseGlow;
+            animation-duration: 0.8s, 1.25s; /* Faster color shift (0.8s) */
+            animation-iteration-count: infinite, infinite;
+            animation-direction: alternate, alternate;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out, ease-in-out;
+
+            /* This ensures the link is the full area of the text */
+            height: fit-content; 
         }
         
-        /* Each letter/span gets its own async animation */
-        #text-container span {
+        /* Each letter is a span and gets its own async animation */
+        #text-link span {
             display: inline-block;
             opacity: 0; 
             
-            /* Stacking Animations: Color, Pulse, Slide-In */
-            animation-name: colorShift, pulseGlow, letterSlideIn;
-            animation-duration: 1s, 0.5s, var(--slide-duration); /* Change 3s/2s for continuous speed */
-            animation-iteration-count: infinite, infinite, 1;
-            animation-direction: alternate, alternate, normal;
+            /* Stacking Animations: Slide-In only (color/pulse moved to #text-link) */
+            animation-name: letterSlideIn;
+            animation-duration: var(--slide-duration);
+            animation-iteration-count: 1;
+            animation-direction: normal;
             animation-fill-mode: forwards;
-            animation-timing-function: ease-in-out, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
-            
-            color: var(--color-start);
-            text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
+            animation-timing-function: cubic-bezier(0.17, 0.84, 0.43, 1);
         }
         
         /* ------------------------------------------------------------------ */
@@ -75,12 +91,12 @@
             }
             70% {
                 opacity: 1;
-                transform: translateY(-5px) scale(1.02); /* Overshoot */
+                transform: translateY(-5px) scale(1.02);
                 filter: blur(0);
             }
             100% {
                 opacity: 1;
-                transform: translateY(0) scale(1); /* Settles */
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -101,33 +117,23 @@
             0% { opacity: 1; }
             100% { opacity: 0.95; }
         }
-
-        /* Click Pulse Effect */
-        .pulse {
-            animation: pulseEffect 0.5s ease-out;
-        }
-        @keyframes pulseEffect {
-            0% { transform: scale(1); }
-            50% { 
-                transform: scale(1.03); 
-                color: white; 
-            }
-            100% { transform: scale(1); }
-        }
     </style>
 </head>
 <body>
 
     <div id="viewport-wrapper">
-        <div id="text-container" data-phrase="The World Is Yours">
-            </div>
+        <a id="text-link" 
+           href="https://discord.gg/9VzZ5bbPkW" 
+           target="_blank" 
+           data-phrase="The World Is Yours">
+            </a>
     </div>
 
     <script>
         /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation --- */
 
-        const container = document.getElementById('text-container');
-        const phrase = container.getAttribute('data-phrase');
+        const linkElement = document.getElementById('text-link');
+        const phrase = linkElement.getAttribute('data-phrase');
         
         // 1. Set the initial page title
         document.title = phrase;
@@ -135,29 +141,23 @@
         // 2. Set up the letter animation delays
         let htmlContent = '';
         phrase.split('').forEach((char, index) => {
-            // 🎯 Change 0.15 for async letter delay speed 🎯
+            // Speed settings: 0.05s delay and 0.5s slide duration
             const delay = index * 0.05; 
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
-            // Apply the unique animation delay to all three animations
-            htmlContent += `<span style="animation-delay: ${delay}s, ${delay}s, ${delay}s;">${charDisplay}</span>`;
+            // Apply delay to the single 'letterSlideIn' animation
+            htmlContent += `<span style="animation-delay: ${delay}s;">${charDisplay}</span>`;
         });
-        container.innerHTML = htmlContent;
+        linkElement.innerHTML = htmlContent;
 
-        // 3. Add click interaction listener
-        container.addEventListener('click', () => {
-            container.classList.remove('pulse'); 
-            void container.offsetWidth; 
-            container.classList.add('pulse'); 
-        });
-
-        // 4. Function to animate the browser tab title
+        
+        // 3. Function to animate the browser tab title
         function animateTitle() {
             const titleEllipsis = ["", ".", "..", "..."];
             let titleIndex = 0;
             const baseTitle = phrase;
 
-            // 🎯 Change 500ms to adjust the speed of the title animation 🎯
+            // 500ms for title animation speed
             setInterval(() => {
                 document.title = baseTitle + titleEllipsis[titleIndex];
                 titleIndex = (titleIndex + 1) % titleEllipsis.length;
