@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>King! - Michroma</title>
+    <title>King!</title>
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <style>
         /* --- CSS STYLES --- */
@@ -17,36 +17,45 @@
             --glow-color: rgba(255, 255, 255, 0.6); 
         }
 
-body, html {
-    margin: 0;
-    /* ADD A SMALL AMOUNT OF PADDING HERE */
-    padding: 10px; /* This creates a 10px buffer around the edge */
-    
-    height: 100%;
-    overflow: hidden; 
-    background-color: var(--background-dark);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Michroma', sans-serif; 
-    color: var(--electric-blue);
-    text-shadow: 0 0 1px var(--electric-blue), 0 0 10px var(--glow-color);
-    letter-spacing: 5px; 
-}
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: var(--background-dark);
+            /* Font settings applied to the wrapper, not body */
+            font-family: 'Michroma', sans-serif;
+            color: var(--electric-blue);
+            letter-spacing: 5px; 
+        }
+        
+        /* The robust container that handles layout and prevents clipping */
+        #viewport-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Hides any overflow, ensuring the animation doesn't clip */
+            overflow: hidden; 
+        }
 
         /* The container for the word "King!" */
         #word-container {
-            font-size: 16vw; /* Slightly larger, highly visible */
+            font-size: 16vw; /* Highly visible size */
             line-height: 1;
             cursor: pointer; 
             
-            /* Animation Adjustments */
+            /* A tighter, sharper text shadow */
+            text-shadow: 0 0 1px var(--electric-blue), 0 0 10px var(--glow-color);
+
+            /* Animation */
             animation: 
                 pulseGlow 2s infinite alternate, /* Constant, subtle breathing glow */
                 slideIn 1.5s cubic-bezier(0.17, 0.84, 0.43, 1) 1 forwards; /* Smooth, powerful slide and snap */
             
             opacity: 0; /* Starts invisible for the initial animation */
-            transform: translateX(-50vw); /* Starts off-screen to the left */
+            /* Starts far off-screen to prevent any clipping */
+            transform: translateX(-100vw); 
         }
 
         /* Keyframes for a constant, breathing glow effect (subtle) */
@@ -59,7 +68,7 @@ body, html {
         @keyframes slideIn {
             0% {
                 opacity: 0;
-                transform: translateX(-50vw) scale(0.9);
+                transform: translateX(-100vw) scale(0.9);
                 filter: blur(10px);
             }
             80% {
@@ -73,7 +82,7 @@ body, html {
             }
         }
 
-        /* Styles for the click pulse effect (optional) */
+        /* Styles for the click pulse effect */
         .pulse {
             animation: pulseEffect 0.5s ease-out;
         }
@@ -89,8 +98,10 @@ body, html {
 </head>
 <body>
 
-    <div id="word-container" class="animate__animated animate__fadeIn">
-        King!
+    <div id="viewport-wrapper">
+        <div id="word-container">
+            King!
+        </div>
     </div>
 
     <script>
