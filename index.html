@@ -10,13 +10,16 @@
 
         :root {
             /* Animation Speeds */
-            --slide-duration: 0.5s; 
-            --color-cycle-speed: 3.5s; /* SLOWER: Use a longer cycle time for a smooth, full rainbow */
-            --pulse-cycle-speed: 1.75s; 
-            /* Theme */
+            --slide-duration: 0.5s; /* Fast slide-in duration */
+            --color-cycle-speed: 5s; /* Speed of the continuous RGB flow */
+            --pulse-cycle-speed: 2s; /* Speed of the continuous glow pulse */
+            
+            /* Theme & Rainbow Definition */
             --background-dark: #0A0A0A;
-            /* NEW: Define a base rainbow gradient for the text */
+            /* Full seven-color rainbow gradient */
             --rainbow-gradient: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            /* Used to stretch the gradient across all letters */
+            --rainbow-gradient-size: 800%; 
         }
 
         body, html {
@@ -38,52 +41,41 @@
         }
 
         /* The Link container, styled to not look like a link */
-/* Each letter is a span and gets its own async animation */
-#text-link span {
-    display: inline-block;
-    opacity: 0; 
-    
-    /* --- TEXT RAINBOW SETUP (KEY CHANGES HERE) --- */
-    color: transparent; 
-    /* 🎯 ADD THIS LINE FOR CHROME/SAFARI COMPATIBILITY 🎯 */
-    -webkit-text-fill-color: transparent;
-    
-    background-image: var(--rainbow-gradient);
-    background-size: 400% 100%; 
-    -webkit-background-clip: text; 
-    background-clip: text; 
-    /* ----------------------------------------------- */
-
-    /* Stacking Animations: Color, Pulse, Slide-In */
-    animation-name: backgroundCycle, pulseGlow, letterSlideIn; 
-    /* ... rest of animation properties ... */
-    
-    /* Initial state (Glow) */
-    text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
-}
+        #text-link {
+            text-decoration: none; 
+            color: inherit; 
+            /* DYNAMIC FONT SIZE FIX: Scales with VW but has a minimum size */
+            font-size: calc(6.5vw + 10px); 
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            height: fit-content; 
+        }
         
         /* Each letter is a span and gets its own async animation */
         #text-link span {
             display: inline-block;
             opacity: 0; 
             
-            /* --- TEXT RAINBOW SETUP (KEY CHANGES HERE) --- */
-            color: transparent; /* Makes the original text color invisible */
-            background-image: var(--rainbow-gradient);
-            background-size: 400% 100%; /* Makes the gradient wide so it can cycle smoothly */
-            -webkit-background-clip: text; /* Clips the gradient to the text shape */
-            background-clip: text; /* Standard version */
-            /* ----------------------------------------------- */
-
-            /* Stacking Animations: Color, Pulse, Slide-In */
-            animation-name: backgroundCycle, pulseGlow, letterSlideIn; /* Renamed colorShift to backgroundCycle */
-            animation-duration: var(--color-cycle-speed), var(--pulse-cycle-speed), var(--slide-duration);
-            animation-iteration-count: infinite, infinite, 1;
-            animation-direction: normal, alternate, normal; /* Changed cycle direction to normal for smooth looping */
-            animation-fill-mode: forwards;
-            animation-timing-function: linear, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+            /* --- TRUE RGB RAINBOW SETUP --- */
+            color: transparent; 
+            /* FIX FOR WHITE TEXT: Ensures WebKit browsers see the transparent text */
+            -webkit-text-fill-color: transparent; 
             
-            /* Initial state */
+            background-image: var(--rainbow-gradient);
+            background-size: var(--rainbow-gradient-size) 100%; 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            
+            /* Stacking Animations: Pulse, Slide-In */
+            animation-name: pulseGlow, letterSlideIn;
+            animation-duration: var(--pulse-cycle-speed), var(--slide-duration);
+            animation-iteration-count: infinite, 1;
+            animation-direction: alternate, normal;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+            
+            /* Initial glow (white shadow is used since the text color is transparent) */
             text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
         }
         
@@ -91,13 +83,7 @@
         /* KEYFRAMES */
         /* ------------------------------------------------------------------ */
 
-        /* NEW: Animates the background position to cycle the rainbow */
-        @keyframes backgroundCycle {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-
-        /* Individual Letter Slide-In Animation (Unchanged) */
+        /* Individual Letter Slide-In Animation */
         @keyframes letterSlideIn {
             0% {
                 opacity: 0;
@@ -106,7 +92,7 @@
             }
             70% {
                 opacity: 1;
-                transform: translateY(-5px) scale(1.02); 
+                transform: translateY(-5px) scale(1.02);
                 filter: blur(0);
             }
             100% {
@@ -115,11 +101,13 @@
             }
         }
 
-        /* Pulse Glow Animation (Unchanged) */
+        /* Pulse Glow Animation */
         @keyframes pulseGlow {
             0% { opacity: 1; }
             100% { opacity: 0.95; }
         }
+        
+        /* Click Pulse Effect (Removed as the body is now a link) */
     </style>
 </head>
 <body>
@@ -133,7 +121,7 @@
     </div>
 
     <script>
-        /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation (Mostly Unchanged) --- */
+        /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation --- */
 
         const linkElement = document.getElementById('text-link');
         const phrase = linkElement.getAttribute('data-phrase');
@@ -141,14 +129,33 @@
         // 1. Set the initial page title
         document.title = phrase;
 
-        // 2. Set up the letter animation delays
+        // 2. Set up the letter animation delays and continuous rainbow flow
+        const rainbowSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rainbow-gradient-size'));
+        const letterCount = phrase.replace(/\s/g, '').length; 
+        const step = rainbowSize / letterCount;
+        
         let htmlContent = '';
+        let letterIndex = 0;
+
         phrase.split('').forEach((char, index) => {
-            const delay = index * 0.05; // 0.05s delay for fast async start
+            // Asynchronous delay for ALL effects (0.05s for quick sequence)
+            const delay = index * 0.05; 
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
-            // Apply delay to all three animations
-            htmlContent += `<span style="animation-delay: ${delay}s, ${delay}s, ${delay}s;">${charDisplay}</span>`;
+            let backgroundOffset = 0;
+            
+            // Calculate negative background position to flow the rainbow from left-to-right
+            if (char !== ' ') {
+                backgroundOffset = -(step * letterIndex);
+                letterIndex++;
+            }
+
+            // Apply delays to the pulse and slide-in animations
+            // Apply background-position to static CSS for the async rainbow wave
+            htmlContent += `<span style="
+                animation-delay: ${delay}s, ${delay}s; 
+                background-position: ${backgroundOffset}%;
+            ">${charDisplay}</span>`;
         });
         linkElement.innerHTML = htmlContent;
 
@@ -159,6 +166,7 @@
             let titleIndex = 0;
             const baseTitle = phrase;
 
+            // 500ms for title animation speed
             setInterval(() => {
                 document.title = baseTitle + titleEllipsis[titleIndex];
                 titleIndex = (titleIndex + 1) % titleEllipsis.length;
