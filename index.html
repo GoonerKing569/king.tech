@@ -10,10 +10,10 @@
 
         :root {
             /* Define the two animated colors */
-            --color-start: #FF00FF; /* Vibrant Magenta */
-            --color-end: #00FF90;   /* Bright Yellow-Green (Cyan-Green) */
+            --color-start: #FF00FF; 
+            --color-end: #00FF90;   
             --background-dark: #0A0A0A;
-            --slide-duration: 1.5s; /* Base duration for the slide animation */
+            --slide-duration: 1.5s; 
         }
 
         body, html {
@@ -36,16 +36,17 @@
 
         /* Container for the whole word, set to flex to align letters */
         #text-container {
-            font-size: 10vw; /* Appropriate size for the full phrase */
+            /* 🎯 ADJUSTED FONT SIZE HERE: Using vmin for better responsive scaling 🎯 */
+            font-size: 8vmin; /* Scales based on the smaller of the viewport dimensions */
             line-height: 1;
             cursor: pointer;
-            display: flex; /* Makes the spans line up horizontally */
+            display: flex;
         }
         
         /* Each letter is a span and gets the individual animation */
         #text-container span {
-            display: inline-block; /* Essential for transform/animation to work */
-            opacity: 0; /* Starts hidden */
+            display: inline-block;
+            opacity: 0; 
             
             /* Shared Continuous Animations */
             animation-name: colorShift, pulseGlow, letterSlideIn;
@@ -55,13 +56,12 @@
             animation-fill-mode: forwards;
             animation-timing-function: ease-in-out, ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
             
-            /* Initial appearance for continuous animations */
             color: var(--color-start);
             text-shadow: 0 0 1px var(--color-start), 0 0 10px var(--color-start);
         }
         
         /* ------------------------------------------------------------------ */
-        /* KEYFRAMES */
+        /* KEYFRAMES (Unchanged) */
         /* ------------------------------------------------------------------ */
 
         /* Individual Letter Slide-In Animation (from below) */
@@ -73,12 +73,12 @@
             }
             70% {
                 opacity: 1;
-                transform: translateY(-5px) scale(1.02); /* Overshoot up */
+                transform: translateY(-5px) scale(1.02);
                 filter: blur(0);
             }
             100% {
                 opacity: 1;
-                transform: translateY(0) scale(1); /* Settles */
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -122,7 +122,7 @@
     </div>
 
     <script>
-        /* --- JAVASCRIPT: Restructures HTML and Applies Asynchronous Delays --- */
+        /* --- JAVASCRIPT: Restructures HTML and Applies Asynchronous Delays (Unchanged) --- */
 
         const container = document.getElementById('text-container');
         const phrase = container.getAttribute('data-phrase');
@@ -134,7 +134,6 @@
         // 2. Restructure the HTML: Break the word into letter spans
         let htmlContent = '';
         phrase.split('').forEach((char, index) => {
-            // Use a slight delay for spaces too, but make them transparent
             const delay = index * 0.15; // 0.15 seconds delay between each letter
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
