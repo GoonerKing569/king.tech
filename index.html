@@ -54,30 +54,33 @@
         
         /* Each letter is a span and gets its own async animation */
         #text-link span {
-            display: inline-block;
-            opacity: 0; 
-            
-            /* --- TRUE RGB RAINBOW SETUP --- */
-            color: transparent; 
-            /* FIX FOR WHITE TEXT: Ensures WebKit browsers see the transparent text */
-            -webkit-text-fill-color: transparent; 
-            
-            background-image: var(--rainbow-gradient);
-            background-size: var(--rainbow-gradient-size) 100%; 
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            
-            /* Stacking Animations: Pulse, Slide-In */
-            animation-name: pulseGlow, letterSlideIn;
-            animation-duration: var(--pulse-cycle-speed), var(--slide-duration);
-            animation-iteration-count: infinite, 1;
-            animation-direction: alternate, normal;
-            animation-fill-mode: forwards;
-            animation-timing-function: ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
-            
-            /* Initial glow (white shadow is used since the text color is transparent) */
-            text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
-        }
+    display: inline-block;
+    opacity: 0; 
+    
+    /* --- TRUE RGB RAINBOW SETUP (FIXED) --- */
+    /* Set the background image (the rainbow) */
+    background-image: var(--rainbow-gradient);
+    background-size: var(--rainbow-gradient-size) 100%; 
+    
+    /* Crucial: Clip the background to the text and make the text transparent */
+    -webkit-background-clip: text; /* Safari/Chrome */
+    background-clip: text; /* Standard */
+    
+    /* CRITICAL FIX: Ensures the fill is transparent in all browsers */
+    -webkit-text-fill-color: transparent; /* Safari/Chrome */
+    text-fill-color: transparent; /* Standard (Though less supported) */
+
+    /* Stacking Animations: Pulse, Slide-In */
+    animation-name: pulseGlow, letterSlideIn;
+    animation-duration: var(--pulse-cycle-speed), var(--slide-duration);
+    animation-iteration-count: infinite, 1;
+    animation-direction: alternate, normal;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out, cubic-bezier(0.17, 0.84, 0.43, 1);
+    
+    /* Initial glow (white shadow is used since the text color is transparent) */
+    text-shadow: 0 0 1px white, 0 0 10px rgba(255, 255, 255, 0.5);
+}
         
         /* ------------------------------------------------------------------ */
         /* KEYFRAMES */
