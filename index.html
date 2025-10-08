@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The World Is Yours</title>
+    <title>The World Is Yours</title> 
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <style>
         /* --- CSS STYLES --- */
 
         :root {
-            /* Define the two animated colors */
-            --color-start: #FF00FF; 
-            --color-end: #00FF90;   
+            /* Animation Speeds */
+            --slide-duration: 1.5s; /* Speed of the initial letter entrance */
+            /* Color Definition */
+            --color-start: #FF00FF; /* Vibrant Magenta */
+            --color-end: #00FF90;   /* Bright Yellow-Green */
+            /* Theme */
             --background-dark: #0A0A0A;
-            --slide-duration: 1.5s; 
         }
 
         body, html {
@@ -34,23 +36,23 @@
             overflow: hidden; 
         }
 
-        /* Container for the whole word, set to flex to align letters */
+        /* Container for the whole word */
         #text-container {
-            /* 🎯 ADJUSTED FONT SIZE HERE: Using vmin for better responsive scaling 🎯 */
-            font-size: 8vmin; /* Scales based on the smaller of the viewport dimensions */
+            /* Dynamic Text Scaling based on VMIN (Viewport Minimum) */
+            font-size: 8vmin; 
             line-height: 1;
             cursor: pointer;
-            display: flex;
+            display: flex; 
         }
         
-        /* Each letter is a span and gets the individual animation */
+        /* Each letter/span gets its own async animation */
         #text-container span {
             display: inline-block;
             opacity: 0; 
             
-            /* Shared Continuous Animations */
+            /* Stacking Animations: Color, Pulse, Slide-In */
             animation-name: colorShift, pulseGlow, letterSlideIn;
-            animation-duration: 3s, 2s, var(--slide-duration);
+            animation-duration: 3s, 2s, var(--slide-duration); /* Change 3s/2s for continuous speed */
             animation-iteration-count: infinite, infinite, 1;
             animation-direction: alternate, alternate, normal;
             animation-fill-mode: forwards;
@@ -61,7 +63,7 @@
         }
         
         /* ------------------------------------------------------------------ */
-        /* KEYFRAMES (Unchanged) */
+        /* KEYFRAMES */
         /* ------------------------------------------------------------------ */
 
         /* Individual Letter Slide-In Animation (from below) */
@@ -73,12 +75,12 @@
             }
             70% {
                 opacity: 1;
-                transform: translateY(-5px) scale(1.02);
+                transform: translateY(-5px) scale(1.02); /* Overshoot */
                 filter: blur(0);
             }
             100% {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0) scale(1); /* Settles */
             }
         }
 
@@ -100,7 +102,7 @@
             100% { opacity: 0.95; }
         }
 
-        /* Styles for the click pulse effect */
+        /* Click Pulse Effect */
         .pulse {
             animation: pulseEffect 0.5s ease-out;
         }
@@ -122,19 +124,19 @@
     </div>
 
     <script>
-        /* --- JAVASCRIPT: Restructures HTML and Applies Asynchronous Delays (Unchanged) --- */
+        /* --- JAVASCRIPT: Restructuring, Async Delays, and Title Animation --- */
 
         const container = document.getElementById('text-container');
         const phrase = container.getAttribute('data-phrase');
-        const slideDuration = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slide-duration'));
         
-        // 1. Set the page title
+        // 1. Set the initial page title
         document.title = phrase;
 
-        // 2. Restructure the HTML: Break the word into letter spans
+        // 2. Set up the letter animation delays
         let htmlContent = '';
         phrase.split('').forEach((char, index) => {
-            const delay = index * 0.15; // 0.15 seconds delay between each letter
+            // 🎯 Change 0.15 for async letter delay speed 🎯
+            const delay = index * 0.05; 
             const charDisplay = (char === ' ') ? '&nbsp;' : char;
             
             // Apply the unique animation delay to all three animations
@@ -142,12 +144,29 @@
         });
         container.innerHTML = htmlContent;
 
-        
-        // 3. Add click interaction listener to the whole container
+        // 3. Add click interaction listener
         container.addEventListener('click', () => {
             container.classList.remove('pulse'); 
-            void container.offsetWidth; // Trigger reflow
+            void container.offsetWidth; 
             container.classList.add('pulse'); 
+        });
+
+        // 4. Function to animate the browser tab title
+        function animateTitle() {
+            const titleEllipsis = ["", ".", "..", "..."];
+            let titleIndex = 0;
+            const baseTitle = phrase;
+
+            // 🎯 Change 500ms to adjust the speed of the title animation 🎯
+            setInterval(() => {
+                document.title = baseTitle + titleEllipsis[titleIndex];
+                titleIndex = (titleIndex + 1) % titleEllipsis.length;
+            }, 500); 
+        }
+
+        // Start the title animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+             animateTitle();
         });
     </script>
 
