@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>King!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS STYLES --- */
+
+        :root {
+            /* Define a vibrant developer-style electric blue */
+            --electric-blue: #00FFFF; 
+            /* Define a dark background color */
+            --background-dark: #121212;
+            /* Define a subtle shadow color */
+            --shadow-light: rgba(0, 255, 255, 0.4);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Hide scrollbars, keeping it a pure single-page experience */
+            background-color: var(--background-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Monoton', cursive; /* The chosen unique font */
+            color: var(--electric-blue);
+            text-shadow: 0 0 10px var(--shadow-light), 0 0 20px var(--electric-blue);
+        }
+
+        /* The container for the word "King!" */
+        #word-container {
+            font-size: 15vw; /* Responsive font size */
+            line-height: 1;
+            cursor: pointer; /* Suggests interactivity */
+            animation: 
+                flicker 1.5s infinite alternate, /* Subtle, constant digital flicker */
+                growAndSpin 2s ease-out 1 forwards; /* The powerful initial animation */
+            opacity: 0; /* Starts invisible for the initial animation */
+            transform: scale(0.5) rotateY(90deg); /* Starts small and rotated */
+        }
+
+        /* Keyframes for a subtle digital flicker effect */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            25% { opacity: 0.95; }
+            50% { opacity: 1.05; text-shadow: 0 0 12px var(--shadow-light), 0 0 22px var(--electric-blue); }
+            75% { opacity: 0.98; }
+        }
+
+        /* Keyframes for the dramatic entrance animation */
+        @keyframes growAndSpin {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotateY(90deg) translateX(-100px);
+                filter: blur(5px);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.1) rotateY(-10deg) translateX(20px);
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg) translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="word-container">
+        King!
+    </div>
+
+    <script>
+        /* --- JAVASCRIPT FOR EXTRA ANIMATION/EFFECTS --- */
+
+        const word = document.getElementById('word-container');
+
+        // Optional: Add a dramatic sound on hover (would require an audio file)
+        /*
+        word.addEventListener('mouseenter', () => {
+             // new Audio('impact-sound.mp3').play();
+        });
+        */
+
+        // Optional: Add a reactive 'pulse' on click/touch
+        word.addEventListener('click', () => {
+            // Remove the class first to allow repeated clicking
+            word.classList.remove('pulse'); 
+            void word.offsetWidth; // Trigger reflow
+            
+            // Re-add a temporary class to trigger a quick animation
+            word.classList.add('pulse'); 
+        });
+
+        // Add the 'pulse' keyframes dynamically using JS (can also be in CSS)
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            .pulse {
+                animation: pulseEffect 0.5s ease-out;
+            }
+            @keyframes pulseEffect {
+                0% { transform: scale(1); box-shadow: none; }
+                50% { 
+                    transform: scale(1.05); 
+                    text-shadow: 0 0 15px var(--shadow-light), 0 0 30px var(--electric-blue);
+                }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+
+</body>
+</html>
